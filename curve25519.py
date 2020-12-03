@@ -31,8 +31,26 @@ class Curve:
             return self.p - self.inverse_mod(-number)
         # By Fermat's little theorem, a**(-1) == a**(p-2) (mod p);
         # pm2 = p - 2
-        pm2 = 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeb
-        return number**pm2 % self.p
+        # pm2 = 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeb
+        # return number**pm2 % self.p
+
+        s, old_s = 0, 1
+        t, old_t = 1, 0
+        r, old_r = self.p, number
+
+        while r != 0:
+            quotient = old_r // r
+            old_r, r = r, old_r - quotient * r
+            old_s, s = s, old_s - quotient * s
+            old_t, t = t, old_t - quotient * t
+
+        gcd, x, y = old_r, old_s, old_t
+
+        assert gcd == 1
+        assert (number * x) % self.p == 1
+
+        return x % self.p
+
 
     @log_errors
     def onCurve(self, point):
