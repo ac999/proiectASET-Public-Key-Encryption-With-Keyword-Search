@@ -4,7 +4,7 @@ from timeout_decorator import timeout
 
 import curve25519
 
-FUNC_TIMEOUT = 120
+FUNC_TIMEOUT = 60
 # Change SIGNALS to False if on Windows
 SIGNALS = True
 
