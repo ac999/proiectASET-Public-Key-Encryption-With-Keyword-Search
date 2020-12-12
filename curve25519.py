@@ -10,6 +10,7 @@ def swap25519(a, b, bit):
     b ^= t
     return (a, b)
 
+BYTEORDER="little"
 # https://martin.kleppmann.com/papers/curve25519.pdf
 class Curve:
 
@@ -29,10 +30,6 @@ class Curve:
 
         if number < 0:
             return self.p - self.inverse_mod(-number)
-        # By Fermat's little theorem, a**(-1) == a**(p-2) (mod p);
-        # pm2 = p - 2
-        # pm2 = 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeb
-        # return number**pm2 % self.p
 
         s, old_s = 0, 1
         t, old_t = 1, 0
@@ -119,20 +116,20 @@ class Curve:
 
         _121665 = 0xDB41
         clamped = bytearray(32)
-        scalar = scalar.to_bytes(32, "little")
+        scalar = scalar.to_bytes(32, BYTEORDER)
         for i in range(32):
             clamped[i] = scalar[i]
         clamped[0] &= 0xf8
         clamped[31] = (clamped[31] & 0x7f) | 0x40
 
         x = point[0]
-        # b = x.to_bytes(16, "little")
+        # b = x.to_bytes(16, BYTEORDER)
         b = x
         c = 0
         d = a = bytearray(16)
         a[0] = d[0] = 1
-        a = int.from_bytes(a, "little")
-        d = int.from_bytes(d, "little")
+        a = int.from_bytes(a, BYTEORDER)
+        d = int.from_bytes(d, BYTEORDER)
 
         for i in range(254,-1,-1):
             bit = (clamped[i>>3] >> (i & 7)) & 1
