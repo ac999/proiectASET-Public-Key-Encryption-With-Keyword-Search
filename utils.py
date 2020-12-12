@@ -11,13 +11,15 @@ def dump_json(PATH, DICTIONARY):
     try:
         with open(PATH, 'w') as fp:
             json.dump(DICTIONARY, indent = 4)
+
     except Exception as e:
         raise e
 
 def load_json(PATH):
     try:
-        with open(PATH, 'r') as fp:
-            return json.load(PATH)
+        with open(PATH) as fp:
+            return json.load(fp)
+
     except Exception as e:
         print(e)
-        return None
+        raise e
