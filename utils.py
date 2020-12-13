@@ -27,10 +27,11 @@ def hibp_password(password):
         print(e)
         return (False, True)
 
-def dump_json(PATH, DICTIONARY):
+def dump_json(PATH, jsonobject):
+
     try:
         with open(PATH, 'w') as fp:
-            json.dump(DICTIONARY, indent = 4)
+            json.dump(jsonobject, fp, indent = 4)
 
     except Exception as e:
         raise e
@@ -48,7 +49,7 @@ def create_json(**kwargs):
     return json.dumps(kwargs)
 
 def validate_user(jsonobject):
-    fields = ["user", "pwd"]
+    fields = ["usr", "pwd"]
     data = json.loads(jsonobject)
     if set(data.keys()) != set(fields):
         return False
