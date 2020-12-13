@@ -46,3 +46,10 @@ def load_json(PATH):
 
 def create_json(**kwargs):
     return json.dumps(kwargs)
+
+def validate_user(jsonobject):
+    fields = ["user", "pwd"]
+    data = json.loads(jsonobject)
+    if set(data.keys()) != set(fields):
+        return False
+    return True
