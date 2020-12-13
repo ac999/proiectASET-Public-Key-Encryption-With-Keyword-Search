@@ -22,5 +22,5 @@ class connConfig(Config):
             self.URL = data['URL']
             self.PORT = int(data['PORT'])
         else:
-            print("Could not load json. Check the following fields: \
+            raise Exception("Could not load json. Check the following fields: \
             {}".format(self.columns))
