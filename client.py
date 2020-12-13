@@ -6,15 +6,22 @@ import aspects
 
 from os import system, name
 
+from timeout_decorator import timeout
+
 from time import sleep
 
 import getpass
 
 import utils
 import logger
+
 from config import connConfig
 
 CONFIG_PATH = "client_cfg/connection.json"
+
+LOGINTIMEOUT = 300
+REGISTERTIMEOUT = 500
+SIGNALS = True
 
 config = connConfig()
 config.load(CONFIG_PATH)
@@ -68,6 +75,7 @@ def menu():
 
 
 @logger.log_exception
+@timeout(REGISTERTIMEOUT, use_signals = SIGNALS)
 def register():
     username = input("Username:")
     password = getpass.getpass("Password:")
@@ -86,12 +94,15 @@ def register():
     print(utils.hash(password))
 
 @logger.log_exception
+@timeout(LOGINTIMEOUT, use_signals = SIGNALS)
 async def login():
     username = input("Username:")
     password = getpass.getpass("Password:")
     password = utils.hash(password)
     async with websockets.connect(uri) as websocket:
-        await websocket.send(utils.create_json(user=username, pwd=password))
-        print(await websocket.recv())
+        creds = utils.create_json(user=username, pwd=password)
+        if utils.validate_user(creds):
+            await websocket.send(creds)
+            print(await websocket.recv())
 
 menu()
