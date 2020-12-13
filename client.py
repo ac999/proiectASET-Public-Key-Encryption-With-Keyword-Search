@@ -42,7 +42,7 @@ def menu():
         x = -1
         if error:
             sleep(2)
-        clear()
+        # clear()
         print("Welcome!\n")
 
         print("1. Login")
@@ -60,14 +60,15 @@ def menu():
 
         if x == 1:
             try:
-                login()
+                resp = asyncio.get_event_loop().run_until_complete(login())
                 error = False
             except Exception as e:
                 print("Couldn't perform login.")
                 error = True
+
         if x == 2:
             try:
-                register()
+                asyncio.get_event_loop().run_until_complete(register())
                 error = False
             except Exception as e:
                 print("Couldn't perform registration.")
@@ -76,27 +77,35 @@ def menu():
 
 @logger.log_exception
 @timeout(REGISTERTIMEOUT, use_signals = SIGNALS)
-def register():
+async def register():
     username = input("Username:")
     password = getpass.getpass("Password:")
     hibp = utils.hibp_password(password)
     if hibp[1]:
         if not hibp[0]:
-            print("\nCould not verify if the password is known compromised.\n")
+            print("\nCould not verify if the password is compromised.\n")
     else:
-        print("\nPassword is known as compromised. Must use another password.\n")
+        print("\nPassword is compromised. Must use another password.\n")
         raise Exception("Compromised password at registration phase.")
     rpassword = getpass.getpass("Repeat password:")
     if password != rpassword:
         print("\nPasswords are not the same.\n")
         raise Exception("Passwords differ at registration phase.")
     password = utils.hash(password)
-    async with websockets.connect(uri) as websocket:
-        creds = utils.create_json(user = username, pwd = password)
-        if utils.validate_user(creds):
-            await websocket.send(creds)
+    creds = utils.create_json(usr = username, pwd = password)
+    if utils.validate_user(creds):
+        async with websockets.connect(uri) as websocket:
+            await websocket.send(utils.create_json(request = "register"))
             resp = await websocket.recv()
-            print(resp)
+            if resp == "ok":
+                await websocket.send(creds)
+                resp = await websocket.recv()
+                if resp == "success":
+                    print("registration successful")
+                else:
+                    raise Exception('\nServer could not register the user.')
+            else:
+                raise Exception('\nServer could not register the user.')
 
 @logger.log_exception
 @timeout(LOGINTIMEOUT, use_signals = SIGNALS)
@@ -104,11 +113,20 @@ async def login():
     username = input("Username:")
     password = getpass.getpass("Password:")
     password = utils.hash(password)
-    async with websockets.connect(uri) as websocket:
-        creds = utils.create_json(user = username, pwd = password)
-        if utils.validate_user(creds):
-            await websocket.send(creds)
+    creds = utils.create_json(usr = username, pwd = password)
+    if utils.validate_user(creds):
+        async with websockets.connect(uri) as websocket:
+            await websocket.send(utils.create_json(request = "login"))
             resp = await websocket.recv()
-            print(resp)
+            if resp == "ok":
+                await websocket.send(creds)
+                resp = await websocket.recv()
+                if resp == "success":
+                    print("login successful")
+                else:
+                    raise Exception('\nUser could not log in.')
+            else:
+                raise Exception('\nUser could not log in.')
 
-menu()
+# menu()
+asyncio.get_event_loop().run_until_complete(menu())
