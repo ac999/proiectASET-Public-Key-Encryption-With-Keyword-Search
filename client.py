@@ -90,8 +90,13 @@ def register():
     if password != rpassword:
         print("\nPasswords are not the same.\n")
         raise Exception("Passwords differ at registration phase.")
-    # password = utils.hash(password)
-    print(utils.hash(password))
+    password = utils.hash(password)
+    async with websockets.connect(uri) as websocket:
+        creds = utils.create_json(user = username, pwd = password)
+        if utils.validate_user(creds):
+            await websocket.send(creds)
+            resp = await websocket.recv()
+            print(resp)
 
 @logger.log_exception
 @timeout(LOGINTIMEOUT, use_signals = SIGNALS)
@@ -100,9 +105,10 @@ async def login():
     password = getpass.getpass("Password:")
     password = utils.hash(password)
     async with websockets.connect(uri) as websocket:
-        creds = utils.create_json(user=username, pwd=password)
+        creds = utils.create_json(user = username, pwd = password)
         if utils.validate_user(creds):
             await websocket.send(creds)
-            print(await websocket.recv())
+            resp = await websocket.recv()
+            print(resp)
 
 menu()
