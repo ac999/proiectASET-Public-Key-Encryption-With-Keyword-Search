@@ -1,3 +1,5 @@
 aspectlib==1.5.2
 timeout-decorator==0.5.0
-pycrypto==2.6.1
+cffi==1.14.4
+cryptography==3.3.1
+pycparser==2.20
