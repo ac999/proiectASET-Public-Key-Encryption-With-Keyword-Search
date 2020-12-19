@@ -42,5 +42,9 @@ class TestX25519(unittest.TestCase):
         self.assertNotEqual(private_key, private_key2, "Generated private keys \
         must differ.")
 
+    def test_x25519(self):
+        _curve = curve25519.Curve()
+        private_key, public_key = _curve.generateKeypair()
+        print(_curve.x25519(public_key, private_key))
 if __name__ == '__main__':
     unittest.main()
