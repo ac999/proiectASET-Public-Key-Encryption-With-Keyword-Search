@@ -33,5 +33,11 @@ class TestPEKS(unittest.TestCase):
         word = "Word1"
         print(client.PEKS(client.publ, client.h, word))
 
+    def test_trapdoor_method(self):
+        client = peks.PEKSClient()
+        client.KeyGen()
+        word = "Word1"
+        print(client.Trapdoor(client.priv, word))
+        
 if __name__ == '__main__':
     unittest.main()
