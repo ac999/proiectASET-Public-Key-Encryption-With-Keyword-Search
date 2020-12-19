@@ -7,6 +7,10 @@ def hash(plaintext):
     n = 16384, r = 8, p = 1)
     return hr.hex()
 
+def hash2(plaintext):
+    hr = hashlib.blake2b(plaintext.encode("utf-8"))
+    return hr.hexdigest()
+
 def dump_json(PATH, DICTIONARY):
     try:
         with open(PATH, 'w') as fp:
@@ -21,3 +25,6 @@ def load_json(PATH):
     except Exception as e:
         print(e)
         return None
+
+def int_to_bytes(x: int, BYTEORDER="little"):
+    return x.to_bytes((x.bit_length() + 7) // 8, BYTEORDER)
