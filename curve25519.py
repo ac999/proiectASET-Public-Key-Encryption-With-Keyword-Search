@@ -94,13 +94,8 @@ class Curve:
         if x1 == x2:
             x3 = (((3 * x1**2 + 2 * self.A * x1 + 1) / 2 * y1)**2 - self.A \
             - 2 * x1) % self.p
-            # y3 = ((2 * x1 + x2 + self.A)*(3 * x1**2 + 2 * self.A * x1 + 1) \
-            # / 2 * y1 - ((3 * x1**2 + 2 * self.A * x1 + 1) / 2 * y1)**3 - y1) \
-            # % self.p
         else:
             x3 = (((y2 - y1) / (x2 - x1))**2 - self.A - x1 - x2) % self.p
-            # y3 = ((2 * x1 + x2 + self.A)*(y2 - y1) / (x2 - x1) - ((y2 - y1) \
-            # / (x2 - x1))**3 - y1) % self.p
 
         return (x3, y3)
 
@@ -116,13 +111,15 @@ class Curve:
 
         _121665 = 0xDB41
         clamped = bytearray(32)
-        scalar = scalar.to_bytes(32, BYTEORDER)
+        scalar = (scalar%self.p).to_bytes(32, BYTEORDER)
         for i in range(32):
             clamped[i] = scalar[i]
         clamped[0] &= 0xf8
         clamped[31] = (clamped[31] & 0x7f) | 0x40
-
-        x = point[0]
+        if (type(point)==type(int())):
+            x = point
+        else:
+            x = point[0]
         # b = x.to_bytes(16, BYTEORDER)
         b = x
         c = 0
@@ -164,8 +161,12 @@ class Curve:
         return self.scalarMult(_point, scalar)
 
     @log_errors
+    def randomElement(self):
+        return randbelow(self.q - 1) + 1
+
+    @log_errors
     def generateKeypair(self):
-        private_key = randbelow(self.q - 1) + 1
+        private_key = self.randomElement()
         public_key  = self.scalarMultBase(private_key)
         return (private_key, public_key)
 
