@@ -48,11 +48,11 @@ class PEKSClient:
     def PEKS(self, A_pub, h, W):
         r = self._curve.randomElement()
         t = encrypt(self.H1(W), self._curve.x25519(h, r)).decode('utf8')
-        output = [self._curve.x25519(A_pub,r),self.H2(t)]
+        output = [self._curve.x25519(A_pub,r), self.H2(t)]
         return output
 
     # Output T_w = H1(w)**alpha
     @log_errors
     def Trapdoor(self, A_priv, W):
-        T_w = _curve.x25519(int(H1(W),16), A_priv)
+        T_w = self._curve.x25519(int(self.H1(W),16), A_priv)
         return T_w
