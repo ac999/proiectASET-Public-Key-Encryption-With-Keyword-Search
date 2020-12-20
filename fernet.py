@@ -9,8 +9,10 @@ def generateSalt():
     return os.urandom(16)
 
 def encrypt(message, key, salt = b""):
-    message = message.encode('utf-8')
-    key = int_to_bytes(key)
+    if type(message) == type(str()):
+        message = message.encode('utf-8')
+    if type(key)==type(int()):
+        key = int_to_bytes(key)
     kdf = PBKDF2HMAC(
     hashes.SHA256(), 32, salt, 100000
     )
