@@ -2,7 +2,7 @@ from aspects import log_errors
 
 from timeout_decorator import timeout
 
-from utils import hash, hash2
+from utils import hash, hash2, int_to_bytes
 import curve25519
 from fernet import encrypt
 # set timeout in seconds for timeout_decorator
@@ -11,6 +11,7 @@ TIMEOUT = 30
 SIGNALS = True
 # Construction using bilinear maps
 class PEKSClient:
+    @log_errors
     def __init__(self):
         self._curve = curve25519.Curve()
         self.priv = None
@@ -45,14 +46,28 @@ class PEKSClient:
 
     # For a public key A_pub and a word W, produces a searchable encryption of W
     @log_errors
-    def PEKS(self, A_pub, h, W):
+    def PEKS(self, W):
         r = self._curve.randomElement()
-        t = encrypt(self.H1(W), self._curve.x25519(h, r)).decode('utf8')
-        output = [self._curve.x25519(A_pub,r), self.H2(t)]
+        t = encrypt(self.H1(W), self._curve.x25519(self.h, r)).decode('utf8')
+        output = (self._curve.x25519(self.publ,r), self.H2(t))
         return output
 
     # Output T_w = H1(w)**alpha
     @log_errors
-    def Trapdoor(self, A_priv, W):
-        T_w = self._curve.x25519(int(self.H1(W),16), A_priv)
+    def Trapdoor(self, W):
+        T_w = self._curve.x25519(int(self.H1(W),16), self.priv)
         return T_w
+
+class PEKSServer:
+    @log_errors
+    def __init__(self, key):
+        '''Client's public key'''
+        self.key = key
+        self.H2 = hash2
+
+    @log_errors
+    def Test(self, S, T_w):
+        A, B = S
+        A = int_to_bytes(A)
+        T_w = int_to_bytes(T_w)
+        return self.H2(encrypt(T_w, A)) == B
