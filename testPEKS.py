@@ -31,13 +31,33 @@ class TestPEKS(unittest.TestCase):
         client = peks.PEKSClient()
         client.KeyGen()
         word = "Word1"
-        print(client.PEKS(client.publ, client.h, word))
+        self.assertNotEqual(
+        client.PEKS(word),
+        client.PEKS(word)
+        )
+
 
     def test_trapdoor_method(self):
         client = peks.PEKSClient()
         client.KeyGen()
         word = "Word1"
-        print(client.Trapdoor(client.priv, word))
-        
+        self.assertEqual(
+        client.Trapdoor(word),
+        client.Trapdoor(word)
+        )
+        client2 = peks.PEKSClient()
+        client2.KeyGen()
+        self.assertNotEqual(client.Trapdoor(word),
+        client2.Trapdoor(word))
+
+    def test_PEKSServer(self):
+        client = peks.PEKSClient()
+        client.KeyGen()
+        word = "Word1"
+        server = peks.PEKSServer(client.publ)
+        S = client.PEKS(word)
+        T_w = client.Trapdoor(word)
+        self.assertEqual(server.Test(S, T_w), True, msg="PEKS not working.")
+
 if __name__ == '__main__':
     unittest.main()
