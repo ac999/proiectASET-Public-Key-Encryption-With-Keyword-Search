@@ -8,7 +8,9 @@ def hash(plaintext):
     return hr.hex()
 
 def hash2(plaintext):
-    hr = hashlib.blake2b(plaintext.encode("utf-8"))
+    if type(plaintext)!=type(bytes()):
+        plaintext = plaintext.encode("utf-8")
+    hr = hashlib.blake2b(plaintext)
     return hr.hexdigest()
 
 def dump_json(PATH, DICTIONARY):
