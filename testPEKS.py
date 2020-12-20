@@ -2,8 +2,6 @@ import unittest
 
 from timeout_decorator import timeout
 
-import fernet
-
 import peks
 
 
@@ -16,16 +14,15 @@ class TestPEKS(unittest.TestCase):
 
     def test_generate_keys(self):
         client = peks.PEKSClient()
-        client.KeyGen()
+        for i in range(100):
+            client.KeyGen()
+            self.assertNotEqual(client.priv, client.publ,msg="Keys should differ")
+
         client.dumpKeys()
         with open("key.priv", "r", encoding="utf-8") as f:
-            assert client.priv == int(f.read())
+            self.assertEqual(client.priv, int(f.read()))
         with open("key.pub", "r", encoding="utf-8") as f:
-            assert client.publ == int(f.read())
-        salt = fernet.generateSalt()
-        ctxt = fernet.encrypt("Test Encryption Algorithm", client.publ, salt)
-        ptxt = fernet.decrypt(ctxt, client.publ, salt)
-        assert "Test Encryption Algorithm"==ptxt.decode('utf-8')
+            self.assertEqual(client.publ, int(f.read()))
 
     def test_peks_method(self):
         client = peks.PEKSClient()
@@ -38,17 +35,18 @@ class TestPEKS(unittest.TestCase):
 
 
     def test_trapdoor_method(self):
-        client = peks.PEKSClient()
-        client.KeyGen()
-        word = "Word1"
-        self.assertEqual(
-        client.Trapdoor(word),
-        client.Trapdoor(word)
-        )
-        client2 = peks.PEKSClient()
-        client2.KeyGen()
-        self.assertNotEqual(client.Trapdoor(word),
-        client2.Trapdoor(word))
+        for i in range(10):
+            client = peks.PEKSClient()
+            client.KeyGen()
+            word = "Word1"
+            self.assertEqual(
+            client.Trapdoor(word),
+            client.Trapdoor(word)
+            )
+            client2 = peks.PEKSClient()
+            client2.KeyGen()
+            self.assertNotEqual(client.Trapdoor(word),
+            client2.Trapdoor(word))
 
     def test_PEKSServer(self):
         client = peks.PEKSClient()
