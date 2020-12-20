@@ -20,7 +20,7 @@ def encrypt(message, key, salt = b""):
     f = Fernet(key)
     return f.encrypt(message)
 
-def decrypt(crypto, key, salt):
+def decrypt(crypto, key, salt = b""):
     key = int_to_bytes(key)
     kdf = PBKDF2HMAC(
     hashes.SHA256(), 32, salt, 100000
