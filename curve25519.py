@@ -140,7 +140,7 @@ class Curve:
 
     @log_errors
     def randomElement(self):
-        return randbelow(self.q - 1) + 1
+        return randbelow(self.p - 1) + 1
 
     @log_errors
     def generateKeypair(self):
