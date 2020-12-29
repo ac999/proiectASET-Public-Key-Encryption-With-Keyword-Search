@@ -10,7 +10,7 @@ def hash(plaintext):
 def hash2(plaintext):
     if type(plaintext)!=type(bytes()):
         plaintext = plaintext.encode("utf-8")
-    hr = hashlib.blake2b(plaintext)
+    hr = hashlib.blake2b(plaintext, digest_size=24)
     return hr.hexdigest()
 
 def dump_json(PATH, DICTIONARY):
