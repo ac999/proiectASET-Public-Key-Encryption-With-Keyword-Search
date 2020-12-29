@@ -25,7 +25,7 @@ class PEKSClient:
         with open("key.priv", 'w+', encoding='utf-8') as f:
             f.write("{}".format(self.priv))
         with open("key.pub", "w+", encoding='utf-8') as f:
-            f.write("{}".formatself.H2(t)(self.publ))
+            f.write("{}".format(self.publ))
 
     # Load keys to file.
     def loadKeys(self):
@@ -73,4 +73,4 @@ class PEKSServer:
         A, B = S
         A = int_to_bytes(A)
         T_w = int_to_bytes(T_w)
-        return self.H2(encrypt(T_w, key)) == B
+        return self.H2(encrypt(T_w, A)) == B
