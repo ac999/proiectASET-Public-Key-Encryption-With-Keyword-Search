@@ -16,10 +16,12 @@ class Curve:
 
     def __init__(self):
         self.name = "x25519" # Montgomery curve
-        self.p = 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffed
+        self.p = \
+        0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffed
         self.A = 486662
         self.h = 8 # cofactor
-        self.q = 0x1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ed
+        self.q = \
+        0x1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ed
 
 
     @log_errors
@@ -75,30 +77,6 @@ class Curve:
 
         return inverse
 
-    @log_errors
-    def pointAdd(self, point1, point2):
-        assert self.onCurve(point1)
-        assert self.onCurve(point2)
-
-        if point1 is None:
-            return point2
-        if point2 is None:
-            return point1
-
-        if point1 == self.inversePoint(point2):
-            return None
-
-        x1, y1 = point1
-        x2, y2 = point2
-
-        if x1 == x2:
-            x3 = (((3 * x1**2 + 2 * self.A * x1 + 1) / 2 * y1)**2 - self.A \
-            - 2 * x1) % self.p
-        else:
-            x3 = (((y2 - y1) / (x2 - x1))**2 - self.A - x1 - x2) % self.p
-
-        return (x3, y3)
-
     # The Montgomery ladder for scalar multiplication.
     @log_errors
     def scalarMult(self, point, scalar):
@@ -152,7 +130,7 @@ class Curve:
             b = e**2 % self.p
 
         c = self.inverse_mod(c)
-        a *= c % self.p
+        a = a * c % self.p
         return a
 
     @log_errors

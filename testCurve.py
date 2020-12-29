@@ -37,14 +37,17 @@ class TestX25519(unittest.TestCase):
         self.assertNotEqual(public_key, None, "Public key should not be empty")
         self.assertNotEqual(private_key, None, "Private key should not be empty")
         private_key2, public_key2 = _curve.generateKeypair()
-        self.assertNotEqual(public_key, public_key2, "Generated public keys must \
+        self.assertNotEqual(public_key, public_key2, "Generated public keys must\
         differ.")
-        self.assertNotEqual(private_key, private_key2, "Generated private keys \
+        self.assertNotEqual(private_key, private_key2, "Generated private keys\
         must differ.")
 
     def test_x25519(self):
         _curve = curve25519.Curve()
-        private_key, public_key = _curve.generateKeypair()
-        print(_curve.x25519(public_key, private_key))
+        private_key_Alice, public_key_Alice = _curve.generateKeypair()
+        private_key_Bob, public_key_Bob = _curve.generateKeypair()
+        s1 = _curve.x25519(private_key_Alice, public_key_Bob)
+        s2 = _curve.x25519(private_key_Bob, public_key_Alice)
+        self.assertEqual(s1, s2, "Shared secret is not equal to both parts.")
 if __name__ == '__main__':
     unittest.main()

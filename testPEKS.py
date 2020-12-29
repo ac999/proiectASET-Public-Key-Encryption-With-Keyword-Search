@@ -14,9 +14,17 @@ class TestPEKS(unittest.TestCase):
 
     def test_generate_keys(self):
         client = peks.PEKSClient()
+        public_key_list = list()
+        private_key_list = list()
         for i in range(100):
             client.KeyGen()
-            self.assertNotEqual(client.priv, client.publ,msg="Keys should differ")
+            public_key_list.append(client.publ)
+            private_key_list.append(client.priv)
+        self.assertEqual(len(public_key_list), len(set(public_key_list)),
+        msg="Public key duplicates found.")
+        for key in public_key_list:
+            self.assertNotEqual(key in private_key_list, True,
+            msg="Public key found in private key list.")
 
         client.dumpKeys()
         with open("key.priv", "r", encoding="utf-8") as f:
@@ -30,7 +38,8 @@ class TestPEKS(unittest.TestCase):
         word = "Word1"
         self.assertNotEqual(
         client.PEKS(word),
-        client.PEKS(word)
+        client.PEKS(word),
+        msg="Same PEKS for same word."
         )
 
 
@@ -38,20 +47,22 @@ class TestPEKS(unittest.TestCase):
         for i in range(10):
             client = peks.PEKSClient()
             client.KeyGen()
-            word = "Word1"
+            word = "Word2"
             self.assertEqual(
             client.Trapdoor(word),
-            client.Trapdoor(word)
+            client.Trapdoor(word),
+            msg="Trapdoors are not equal for same client and word"
             )
             client2 = peks.PEKSClient()
             client2.KeyGen()
             self.assertNotEqual(client.Trapdoor(word),
-            client2.Trapdoor(word))
+            client2.Trapdoor(word),
+            msg="Trapdoors are equal for same word and different clients.")
 
     def test_PEKSServer(self):
         client = peks.PEKSClient()
         client.KeyGen()
-        word = "Word1"
+        word = "Word3"
         server = peks.PEKSServer(client.publ)
         S = client.PEKS(word)
         T_w = client.Trapdoor(word)
