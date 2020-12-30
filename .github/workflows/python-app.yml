@@ -35,3 +35,5 @@ jobs:
       run: |
         pytest test.py
         pytest testCurve.py
+        pytest testEncryption.py
+        pytest testPEKS.py
