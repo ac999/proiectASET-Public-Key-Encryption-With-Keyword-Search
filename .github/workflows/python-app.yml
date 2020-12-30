@@ -5,9 +5,13 @@ name: Python Public Key Encryption with Keyword Search
 
 on:
   push:
-    branches: [ main ]
+    branches:
+    - main
+    - peks_function
   pull_request:
-    branches: [ main ]
+    branches:
+    - main
+    - peks_function
 
 jobs:
   build:
@@ -35,3 +39,5 @@ jobs:
       run: |
         pytest test.py
         pytest testCurve.py
+        pytest testEncryption.py
+        pytest testPEKS.py
