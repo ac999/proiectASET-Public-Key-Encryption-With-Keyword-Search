@@ -11,6 +11,7 @@ def swap25519(a, b, bit):
     return (a, b)
 
 BYTEORDER="little"
+
 # https://martin.kleppmann.com/papers/curve25519.pdf
 class Curve:
 

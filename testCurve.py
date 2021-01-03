@@ -49,5 +49,6 @@ class TestX25519(unittest.TestCase):
         s1 = _curve.x25519(private_key_Alice, public_key_Bob)
         s2 = _curve.x25519(private_key_Bob, public_key_Alice)
         self.assertEqual(s1, s2, "Shared secret is not equal to both parts.")
+
 if __name__ == '__main__':
     unittest.main()
